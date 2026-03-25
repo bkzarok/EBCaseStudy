@@ -131,8 +131,8 @@ namespace EBCaseStudy.Controllers
             var cart = new Cart();
             foreach (var item in order.OrderItems)
             {
-                var priceHistory = await _apiService.GetPriceHistoryAsync(item.ProductId, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow);
-                var latestPrice = priceHistory.OrderByDescending(p => p.Date).FirstOrDefault()?.Value ?? 0;
+                var priceHistoryResponse = await _apiService.GetPriceHistoryAsync(item.ProductId, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow);
+                var latestPrice = priceHistoryResponse.Items.OrderByDescending(p => p.DateTime).FirstOrDefault()?.Amount ?? 0;
 
                 cart.Items.Add(new CartItem
                 {

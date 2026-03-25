@@ -24,12 +24,12 @@ namespace EBCaseStudy.Services
             };
         }
 
-        public async Task<Product> GetProductAsync(int productId)
+        public async Task<Product?> GetProductAsync(int productId)
         {
             return await _httpClient.GetFromJsonAsync<Product>($"/api/products/{productId}", _jsonSerializerOptions);
         }
 
-        public async Task<PaginatedProductResponse> GetProductsAsync(int pageNumber = 1, int pageSize = 10, string category = null, string sortBy = null)
+        public async Task<PaginatedProductResponse?> GetProductsAsync(int pageNumber = 1, int pageSize = 10, string? category = null, string? sortBy = null)
         {
             var query = HttpUtility.ParseQueryString(string.Empty);
             query["pageNumber"] = pageNumber.ToString();
@@ -49,7 +49,7 @@ namespace EBCaseStudy.Services
             return JsonSerializer.Deserialize<PaginatedProductResponse>(content, _jsonSerializerOptions);
         }
 
-        public async Task<List<Price>> GetPriceHistoryAsync(int productId, DateTime? startDate = null, DateTime? endDate = null)
+        public async Task<PaginatedPriceResponse?> GetPriceHistoryAsync(int productId, DateTime? startDate = null, DateTime? endDate = null)
         {
             var query = HttpUtility.ParseQueryString(string.Empty);
             query["productId"] = productId.ToString();
@@ -61,40 +61,11 @@ namespace EBCaseStudy.Services
             {
                 query["endDate"] = endDate.Value.ToString("yyyy-MM-dd");
             }
-            
+
             var response = await _httpClient.GetAsync($"/api/prices?{query}");
-            if (!response.IsSuccessStatusCode)
-            {
-                return new List<Price>();
-            }
-
+            response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
-            if (string.IsNullOrWhiteSpace(content))
-            {
-                return new List<Price>();
-            }
-
-            try
-            {
-                return JsonSerializer.Deserialize<List<Price>>(content, _jsonSerializerOptions) ?? new List<Price>();
-            }
-            catch (JsonException)
-            {
-                try
-                {
-                    var singlePrice = JsonSerializer.Deserialize<Price>(content, _jsonSerializerOptions);
-                    if (singlePrice != null)
-                    {
-                        return new List<Price> { singlePrice };
-                    }
-                }
-                catch (JsonException)
-                {
-                    // Ignore and return empty list if it's not a single price object either
-                }
-            }
-
-            return new List<Price>();
+            return JsonSerializer.Deserialize<PaginatedPriceResponse>(content, _jsonSerializerOptions);
         }
     }
 }

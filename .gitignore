@@ -214,3 +214,6 @@ EBCaseStudy.db-shm
 EBCaseStudy.db-wal
 EBCaseStudy/appsettings.Development.json
 EBCaseStudy/appsettings.json
+README_DEP.md
+
+.fake

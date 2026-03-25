@@ -24,6 +24,27 @@ This is a web application built for a fictional building supplies company to hel
 *   **Frontend**: Razor Views, Bootstrap, Chart.js
 *   **API Communication**: `HttpClient` is used to communicate with the external REST API for product and pricing data.
 
+## Design Decisions
+
+### Architecture
+The application is built upon the existing ASP.NET Core MVC project structure. A dedicated `ApiService` was created to encapsulate all communication with the external product API, separating external data concerns from the main application logic. This makes the application more modular and easier to maintain.
+
+### Data Model
+*   **Local Database**: A local SQLite database managed by Entity Framework Core was chosen for its simplicity and portability. It requires no external database server setup.
+*   **Order Data Ownership**: The application defines its own `Order` and `OrderItem` models. This is a key decision: the application *owns* the order data. When an order is created, product information and, crucially, the *price at the time of order* are copied into the local database. This ensures that order records are immutable and historically accurate, even if product names or prices change in the external API later.
+
+### Interpreting Open-Ended Requirements
+1.  **"Understand how prices are moving"**: This was interpreted as a need for visual trend analysis. The implementation provides a clear line chart on each product's detail page, showing price fluctuations over the last year.
+2.  **"Foreman reviews orders"**: This was addressed by creating a simple but effective status-based workflow (`New`, `Approved`, `Rejected`). A dedicated "Orders" page defaults to showing `New` orders, providing a direct to-do list for the foreman. The foreman has the ability to edit quantities or approve/reject the entire order.
+3.  **"Make reordering easier"**: A "Reorder" button on approved orders was implemented. This feature streamlines the process of re-purchasing common sets of items by creating a new cart with the same products at their current prices.
+
+### What Was Skipped
+For this initial prototype, several features were considered out of scope:
+*   **User Authentication**: As requested, a full authentication system was omitted in favor of a simple user name string for each order.
+*   **Advanced Reporting**: No complex reporting or data visualization dashboard was built beyond the individual price history charts.
+*   **UI/UX Polish**: The focus was on functionality over extensive UI design. The standard Bootstrap framework provides a clean and responsive base, but further branding and custom styling were not implemented.
+
+
 ## How to Run the Application
 
 1.  **Prerequisites**:
