@@ -1,0 +1,83 @@
+@model EBCaseStudy.Models.ProductDetailsViewModel
+@using System.Linq
+
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<h1>@Model.Product.Name</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <h4>Product Details</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-3">
+                Category
+            </dt>
+            <dd class="col-sm-9">
+                @Model.Product.Category
+            </dd>
+            <dt class="col-sm-3">
+                Description
+            </dt>
+            <dd class="col-sm-9">
+                @Model.Product.Description
+            </dd>
+        </dl>
+        @if (!string.IsNullOrEmpty(Model.Product.ImageUrl))
+        {
+            <img src="@Model.Product.ImageUrl" alt="@Model.Product.Name" class="img-fluid" />
+        }
+    </div>
+    <div class="col-md-4">
+        <h4>Add to Cart</h4>
+        <hr />
+        <form asp-controller="Cart" asp-action="AddToCart" method="post">
+            <input type="hidden" name="productId" value="@Model.Product.Id" />
+            <div class="form-group">
+                <label for="quantity">Quantity</label>
+                <input type="number" name="quantity" id="quantity" value="1" min="1" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-primary">Add to Cart</button>
+        </form>
+    </div>
+</div>
+
+
+<div class="mt-4">
+    <h4>Price History (Last 12 Months)</h4>
+    <canvas id="priceChart"></canvas>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var ctx = document.getElementById('priceChart').getContext('2d');
+            var priceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(Model.PriceHistory.Select(p => p.Date.ToString("yyyy-MM-dd")))),
+                    datasets: [{
+                        label: 'Price',
+                        data: @Html.Raw(Json.Serialize(Model.PriceHistory.Select(p => p.Value))),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

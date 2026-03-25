@@ -1,0 +1,13 @@
+@model int
+
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<h1>Order Confirmation</h1>
+
+<p>Your order has been placed successfully. Your order number is: @Model</p>
+
+<div>
+    <a asp-controller="Products" asp-action="Index">Continue Shopping</a>
+</div>
