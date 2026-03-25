@@ -31,7 +31,7 @@ This is a web application built for a fictional building supplies company to hel
 
 2.  **Clone the repository**:
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/bkzarok/EBCaseStudy.git
     cd EBCaseStudy
     ```
 
